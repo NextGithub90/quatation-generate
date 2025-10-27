@@ -1,0 +1,87 @@
+/* CSS Variables */
+:root {
+  --brand-blue: #0b3a7a;
+  --brand-blue-2: #173a8a;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #f8fafc;
+  --paper: #ffffff;
+  --space-1: .25rem; /*4px*/
+  --space-2: .5rem;  /*8px*/
+  --space-3: .75rem; /*12px*/
+  --space-4: 1rem;   /*16px*/
+  --space-5: 1.5rem; /*24px*/
+}
+
+html, body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: var(--text-main); background: var(--bg); }
+
+/* Topbar */
+.topbar { background: var(--brand-blue); color: #fff; padding: var(--space-3) 0; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.topbar-title { font-size: 1.4rem; font-weight: 700; letter-spacing: .3px; }
+.topbar-logo { height: 40px; width: auto; }
+
+/* Section titles */
+.section-title { font-weight: 600; color: var(--brand-blue); }
+
+/* Form items */
+.item-list { border: 1px dashed var(--border); padding: var(--space-3); border-radius: .5rem; background: #fff; }
+.item-row { display: grid; grid-template-columns: 1.6fr .8fr .9fr 1.2fr auto; gap: var(--space-2); margin-bottom: var(--space-2); }
+.item-row .form-control, .item-row .form-select { height: 38px; }
+.item-actions .btn { height: 38px; }
+
+/* Invoice preview */
+.invoice.paper { background: var(--paper); border: 1px solid var(--border); border-radius: .5rem; overflow: hidden; }
+.invoice-header { background: var(--brand-blue); color: #fff; padding: var(--space-4); display: flex; justify-content: space-between; align-items: center; }
+.invoice-header .title { font-size: 1.25rem; font-weight: 700; flex: 1; text-align: center; }
+.company-logo { height: 40px; }
+
+.invoice-meta { padding: var(--space-4); padding-bottom: var(--space-3); }
+.meta-block { font-size: .95rem; }
+.meta-block .label { color: #667085; min-width: 110px; display: inline-block; }
+/* Tambahkan tanda ':' setelah label agar sesuai contoh */
+.meta-block .label::after { content: ':'; margin: 0 6px; }
+
+/* Force two-column layout for meta section */
+.invoice-meta .row { display: flex; flex-wrap: nowrap; }
+.invoice-meta .row .col-6 { flex: 0 0 50%; max-width: 50%; }
+
+/* Table */
+.invoice-table { border: 1px solid var(--border); margin: 0 var(--space-4); width: calc(100% - 2rem); }
+.invoice-table thead th { background: #eef2ff; border-bottom: 1px solid var(--border); font-weight: 600; }
+.invoice-table td, .invoice-table th { padding: .5rem .6rem; }
+.invoice-table tbody tr:nth-child(even) { background: #fafafa; }
+
+/* Summary */
+.summary { border: none; margin: var(--space-4); }
+.summary-table { width: 320px; }
+.summary-table td { padding: .35rem .5rem; border-bottom: 1px solid var(--border); }
+.summary-table tr:last-child td { border-bottom: none; }
+
+/* Notes */
+.notes { margin: 0 var(--space-4); }
+.notes-content { min-height: 60px; border: 1px dashed var(--border); padding: var(--space-3); border-radius: .5rem; background: #fff; }
+
+/* Signature */
+.signature { position: relative; margin: var(--space-4); display: flex; justify-content: space-between; align-items: flex-end; }
+.signature-img { height: 68px; width: auto; margin: var(--space-2) 0; opacity: .95; }
+.sig-name { font-weight: 600; }
+.sig-title { color: var(--text-muted); font-size: .9rem; }
+.sig-watermark { position: absolute; right: 16px; bottom: 0; width: 200px; height: 200px; opacity: .08; background: radial-gradient(circle at 20% 20%, #9ab6ff 0, #9ab6ff 20%, transparent 22%), radial-gradient(circle at 80% 60%, #9ab6ff 0, #9ab6ff 20%, transparent 22%); border-radius: 50%; }
+
+/* Print styles */
+@media print {
+  body { background: #fff; }
+  .topbar, .card-header .btn, .d-print-none { display: none !important; }
+  .card { box-shadow: none !important; border: none !important; }
+  .invoice.paper { border: none; }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 992px) {
+  .item-row { grid-template-columns: 1fr 1fr .8fr 1fr auto; }
+  .summary-table { width: 100%; }
+}
+@media (max-width: 576px) {
+  .item-row { grid-template-columns: 1fr; }
+}
