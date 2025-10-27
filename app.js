@@ -379,7 +379,19 @@ async function generatePDF() {
   const pdf = new jsPDF("p", "mm", "a4");
 
   // Convert preview to canvas, then add to PDF with pagination
-  const canvas = await html2canvas(invoicePreviewEl, { scale: 2, useCORS: true });
+  // Paksa lebar A4 (sekitar 794px @96DPI) saat proses capture agar konsisten di mobile
+  const A4_WIDTH_PX = Math.round((210 / 25.4) * 96); // 210mm -> px
+  const canvas = await html2canvas(invoicePreviewEl, {
+    scale: 2,
+    useCORS: true,
+    windowWidth: A4_WIDTH_PX + 40,
+    onclone: (docClone) => {
+      const el = docClone.querySelector('#invoicePreview');
+      if (el) {
+        el.style.width = A4_WIDTH_PX + 'px';
+      }
+    }
+  });
   const imgData = canvas.toDataURL("image/png");
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
@@ -402,6 +414,15 @@ async function generatePDF() {
 
   // Header & footer (simple consistent)
   addHeaderFooter(pdf);
+
+  // Pastikan metadata PDF tidak menampilkan 'Koperasi Serasi' sebagai judul viewer
+  pdf.setProperties({
+    title: invoiceNumberEl.value ? `Quotation ${invoiceNumberEl.value}` : 'Quotation',
+    subject: '',
+    author: '',
+    keywords: '',
+    creator: ''
+  });
 
   pdf.save(`${invoiceNumberEl.value || "invoice"}.pdf`);
 }
