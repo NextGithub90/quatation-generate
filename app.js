@@ -308,6 +308,7 @@ function renderAttachments() {
     const el = document.createElement("img");
     el.src = img.src;
     el.alt = img.name || "image";
+    el.loading = "eager";
     attachmentsGridEl.appendChild(el);
   });
 }
@@ -409,6 +410,9 @@ async function generatePDF() {
   }
   updateAll();
 
+  // Pastikan semua gambar di area preview sudah selesai dimuat
+  await ensureImagesLoaded(invoicePreviewEl);
+
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
 
@@ -417,9 +421,16 @@ async function generatePDF() {
   const A4_WIDTH_PX = Math.round((210 / 25.4) * 96); // 210mm -> px
   const A4_HEIGHT_PX = Math.round((297 / 25.4) * 96); // 297mm -> px
   const canvas = await html2canvas(invoicePreviewEl, {
-    scale: 2,
+    scale: 1.5, // lebih ringan agar tidak blank
     useCORS: true,
+    imageTimeout: 10000,
+    backgroundColor: "#ffffff",
+    // gunakan renderer default untuk stabilitas; FO kadang menghasilkan canvas kosong
+    // foreignObjectRendering: false,
+    scrollX: 0,
+    scrollY: 0,
     windowWidth: A4_WIDTH_PX + 40,
+    windowHeight: A4_HEIGHT_PX + 120,
     onclone: (docClone) => {
       const el = docClone.querySelector("#invoicePreview");
       if (el) {
@@ -428,9 +439,34 @@ async function generatePDF() {
         el.style.display = "flex";
         el.style.flexDirection = "column";
       }
+      // Perbaiki rendering Grid di clone: ubah grid lampiran menjadi flex agar stabil di html2canvas
+      const grid = docClone.querySelector("#attachmentsGrid");
+      if (grid) {
+        grid.style.display = "flex";
+        grid.style.flexWrap = "wrap";
+        grid.style.gap = "12px";
+        const imgs = Array.from(grid.querySelectorAll("img"));
+        imgs.forEach((img) => {
+          img.style.width = "calc(33.333% - 8px)"; // 3 kolom kira-kira
+          img.style.height = "140px";
+          img.style.objectFit = "contain";
+          img.style.transform = "none";
+          img.style.breakInside = "avoid";
+          img.style.pageBreakInside = "avoid";
+        });
+      }
     },
   });
-  const imgData = canvas.toDataURL("image/png");
+  // Gunakan JPEG agar ukuran lebih kecil dan lebih stabil di jsPDF; fallback ke PNG jika gagal
+  let imgData;
+  let imgFormat = "JPEG";
+  try {
+    imgData = canvas.toDataURL("image/jpeg", 0.92);
+  } catch (e) {
+    console.warn("JPEG toDataURL gagal, fallback ke PNG", e);
+    imgData = canvas.toDataURL("image/png");
+    imgFormat = "PNG";
+  }
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 
@@ -438,16 +474,23 @@ async function generatePDF() {
   const imgWidth = pageWidth - 20; // margin
   const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-  let position = 10;
-  let heightLeft = imgHeight;
-  pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight - 20;
+  const margin = 10; // top/bottom margin in mm
+  let yOffset = 0; // how much of the image height has been placed
+  try {
+    pdf.addImage(imgData, imgFormat, margin, margin, imgWidth, imgHeight);
+  } catch (e) {
+    console.warn("addImage gagal, coba fallback PNG", e);
+    const png = canvas.toDataURL("image/png");
+    pdf.addImage(png, "PNG", margin, margin, imgWidth, imgHeight);
+    imgData = png;
+    imgFormat = "PNG";
+  }
+  yOffset += pageHeight - margin * 2;
 
-  while (heightLeft > 0) {
+  while (yOffset < imgHeight) {
     pdf.addPage();
-    position = 10; // reset
-    pdf.addImage(imgData, "PNG", 10, position - heightLeft, imgWidth, imgHeight);
-    heightLeft -= pageHeight - 20;
+    pdf.addImage(imgData, imgFormat, margin, margin - yOffset, imgWidth, imgHeight);
+    yOffset += pageHeight - margin * 2;
   }
 
   // Header & footer (simple consistent)
@@ -463,6 +506,22 @@ async function generatePDF() {
   });
 
   pdf.save(`${invoiceNumberEl.value || "invoice"}.pdf`);
+}
+
+// Utility: wait until all images inside an element are loaded
+function ensureImagesLoaded(root) {
+  const imgs = Array.from(root.querySelectorAll("img"));
+  if (imgs.length === 0) return Promise.resolve();
+  return Promise.all(
+    imgs.map(
+      (img) =>
+        new Promise((resolve) => {
+          if (img.complete) return resolve();
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        })
+    )
+  );
 }
 
 function addHeaderFooter(pdf) {
