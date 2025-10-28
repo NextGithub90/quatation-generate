@@ -48,10 +48,13 @@ const sumVatEl = document.getElementById("sumVat");
 const sumGrandEl = document.getElementById("sumGrand");
 const notesContentEl = document.getElementById("notesContent");
 const invoicePreviewEl = document.getElementById("invoicePreview");
+const attachmentInputEl = document.getElementById("attachmentInput");
+const attachmentsGridEl = document.getElementById("attachmentsGrid");
 
 /* State */
 let quill = null; // WYSIWYG instance
 let items = []; // {id, name, qty, unit, base}
+let attachments = []; // [{src,name}]
 
 /* Initialize */
 function init() {
@@ -106,6 +109,23 @@ function bindEvents() {
     }, 0);
   });
   loadEditorBtn.addEventListener("click", enableEditorLazy);
+
+  // Attachments
+  if (attachmentInputEl) {
+    attachmentInputEl.addEventListener("change", async (e) => {
+      const files = Array.from(e.target.files || []).slice(0, 6);
+      const readers = files.map(
+        (file) =>
+          new Promise((resolve) => {
+            const fr = new FileReader();
+            fr.onload = () => resolve({ src: fr.result, name: file.name });
+            fr.readAsDataURL(file);
+          })
+      );
+      attachments = await Promise.all(readers);
+      renderAttachments();
+    });
+  }
 }
 
 /* Items */
@@ -245,7 +265,7 @@ function updateAll() {
     const total = salePrice * (it.qty || 0);
     subTotal += total;
     const tr = document.createElement("tr");
-    const breakdown = it.base ? `<div class="text-muted small">${toIDR(it.base)} + ${marginPct}%</div>` : "";
+    const breakdown = ""; // Hilangkan tampilan "Rp ... + %" di deskripsi
     tr.innerHTML = `
       <td>${idx + 1}</td>
       <td><div>${escapeHtml(it.name || "")}</div>${breakdown}</td>
@@ -262,6 +282,9 @@ function updateAll() {
   sumTotalEl.textContent = toIDR(subTotal);
   sumVatEl.textContent = toIDR(vatAmount);
   sumGrandEl.textContent = toIDR(grand);
+
+  // Render attachments if any
+  renderAttachments();
 }
 
 function formatDateDDMMYYYY(iso) {
@@ -276,6 +299,17 @@ function formatDateDDMMYYYY(iso) {
 
 function escapeHtml(str) {
   return str.replace(/[&<>\"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+}
+
+function renderAttachments() {
+  if (!attachmentsGridEl) return;
+  attachmentsGridEl.innerHTML = "";
+  attachments.forEach((img) => {
+    const el = document.createElement("img");
+    el.src = img.src;
+    el.alt = img.name || "image";
+    attachmentsGridEl.appendChild(el);
+  });
 }
 
 /* WYSIWYG Lazy Load */
@@ -381,16 +415,20 @@ async function generatePDF() {
   // Convert preview to canvas, then add to PDF with pagination
   // Paksa lebar A4 (sekitar 794px @96DPI) saat proses capture agar konsisten di mobile
   const A4_WIDTH_PX = Math.round((210 / 25.4) * 96); // 210mm -> px
+  const A4_HEIGHT_PX = Math.round((297 / 25.4) * 96); // 297mm -> px
   const canvas = await html2canvas(invoicePreviewEl, {
     scale: 2,
     useCORS: true,
     windowWidth: A4_WIDTH_PX + 40,
     onclone: (docClone) => {
-      const el = docClone.querySelector('#invoicePreview');
+      const el = docClone.querySelector("#invoicePreview");
       if (el) {
-        el.style.width = A4_WIDTH_PX + 'px';
+        el.style.width = A4_WIDTH_PX + "px";
+        el.style.minHeight = A4_HEIGHT_PX + "px";
+        el.style.display = "flex";
+        el.style.flexDirection = "column";
       }
-    }
+    },
   });
   const imgData = canvas.toDataURL("image/png");
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -417,11 +455,11 @@ async function generatePDF() {
 
   // Pastikan metadata PDF tidak menampilkan 'Koperasi Serasi' sebagai judul viewer
   pdf.setProperties({
-    title: invoiceNumberEl.value ? `Quotation ${invoiceNumberEl.value}` : 'Quotation',
-    subject: '',
-    author: '',
-    keywords: '',
-    creator: ''
+    title: invoiceNumberEl.value ? `Quotation ${invoiceNumberEl.value}` : "Quotation",
+    subject: "",
+    author: "",
+    keywords: "",
+    creator: "",
   });
 
   pdf.save(`${invoiceNumberEl.value || "invoice"}.pdf`);

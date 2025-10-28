@@ -155,6 +155,12 @@
                             </div>
 
                             <div class="form-section">
+                                <h6 class="section-title"><i class="bi bi-image"></i> Lampiran Gambar</h6>
+                                <input type="file" id="attachmentInput" class="form-control" accept="image/*" multiple>
+                                <div class="form-text">Maks 6 gambar. Ditampilkan di preview antara Total dan Catatan.</div>
+                            </div>
+
+                            <div class="form-section">
                                 <h6 class="section-title"><i class="bi bi-truck"></i> Catatan Pengiriman</h6>
                                 <textarea id="shippingNotes" class="form-control" rows="3"
                                     placeholder="Masukkan catatan pengiriman"></textarea>
@@ -261,21 +267,24 @@
                                 </div>
                             </div>
 
-                            <!-- Notes -->
-                            <div class="notes mt-3">
-                                <h6>Catatan</h6>
-                                <div id="notesContent" class="notes-content"></div>
-                            </div>
+                            <!-- Attachments placeholder -->
+                            <div id="attachmentsGrid" class="attachments-grid"></div>
 
-                            <!-- Signature -->
-                            <div class="signature mt-4">
-                                <div class="sig-left">
-                                    <div>Hormat Kami,</div>
-                                    <img src="images/tanda_tangan.jpg" alt="Tanda Tangan" class="signature-img" />
-                                    <div class="sig-name">Tri Nugroho Widy Handaka</div>
-                                    <div class="sig-title">SeraKop Operational Head</div>
+                            <!-- Footer: notes above signature and stick to bottom -->
+                            <div class="invoice-footer">
+                                <div class="notes mt-3">
+                                    <h6>Catatan</h6>
+                                    <div id="notesContent" class="notes-content"></div>
                                 </div>
-                                <div class="sig-watermark"></div>
+                                <div class="signature mt-4">
+                                    <div class="sig-left">
+                                        <div>Hormat Kami,</div>
+                                        <img src="images/tanda_tangan.jpg" alt="Tanda Tangan" class="signature-img" />
+                                        <div class="sig-name">Tri Nugroho Widy Handaka</div>
+                                        <div class="sig-title">SeraKop Operational Head</div>
+                                    </div>
+                                    <div class="sig-watermark"></div>
+                                </div>
                             </div>
                         </section>
                     </div>
