@@ -50,6 +50,7 @@ const notesContentEl = document.getElementById("notesContent");
 const invoicePreviewEl = document.getElementById("invoicePreview");
 const attachmentInputEl = document.getElementById("attachmentInput");
 const attachmentsGridEl = document.getElementById("attachmentsGrid");
+const clearAttachmentsBtn = document.getElementById("clearAttachmentsBtn");
 
 /* State */
 let quill = null; // WYSIWYG instance
@@ -124,6 +125,11 @@ function bindEvents() {
       );
       attachments = await Promise.all(readers);
       renderAttachments();
+    });
+  }
+  if (clearAttachmentsBtn) {
+    clearAttachmentsBtn.addEventListener("click", () => {
+      clearAttachments();
     });
   }
 }
@@ -304,13 +310,39 @@ function escapeHtml(str) {
 function renderAttachments() {
   if (!attachmentsGridEl) return;
   attachmentsGridEl.innerHTML = "";
-  attachments.forEach((img) => {
+  attachments.forEach((img, idx) => {
+    const wrap = document.createElement("div");
+    wrap.className = "attachment-item";
+
     const el = document.createElement("img");
     el.src = img.src;
     el.alt = img.name || "image";
     el.loading = "eager";
-    attachmentsGridEl.appendChild(el);
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "attachment-remove";
+    btn.title = "Hapus gambar";
+    btn.setAttribute("aria-label", "Hapus gambar");
+    btn.textContent = "×";
+    btn.addEventListener("click", () => removeAttachment(idx));
+
+    wrap.appendChild(el);
+    wrap.appendChild(btn);
+    attachmentsGridEl.appendChild(wrap);
   });
+}
+
+function removeAttachment(index) {
+  if (index < 0 || index >= attachments.length) return;
+  attachments.splice(index, 1);
+  renderAttachments();
+}
+
+function clearAttachments() {
+  attachments = [];
+  renderAttachments();
+  if (attachmentInputEl) attachmentInputEl.value = ""; // reset input file
 }
 
 /* WYSIWYG Lazy Load */
@@ -454,6 +486,8 @@ async function generatePDF() {
           img.style.breakInside = "avoid";
           img.style.pageBreakInside = "avoid";
         });
+        const removes = Array.from(grid.querySelectorAll(".attachment-remove"));
+        removes.forEach((btn) => (btn.style.display = "none"));
       }
     },
   });
