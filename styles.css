@@ -214,11 +214,18 @@ body {
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
-.attachments-grid .attachment-item { position: relative; }
+.attachments-grid .attachment-item {
+  position: relative;
+  /* Buat kotak konsisten agar gambar tidak terlihat lonjong */
+  aspect-ratio: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .attachments-grid img {
   width: 100%;
-  height: 140px;
-  object-fit: contain;
+  height: 100%;
+  object-fit: contain; /* jaga proporsi gambar tanpa distorsi */
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #fff;

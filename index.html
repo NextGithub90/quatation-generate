@@ -29,6 +29,14 @@
     <!-- App styles -->
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="modern.css" />
+    <style>
+      .toast-container { position: fixed; right: 16px; bottom: 16px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+      .toast { min-width: 220px; max-width: 360px; padding: 10px 12px; border-radius: 10px; color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.15); opacity: 0; transform: translateY(8px); transition: opacity .2s ease, transform .2s ease; font-size: 14px; }
+      .toast.show { opacity: 1; transform: translateY(0); }
+      .toast-success { background: #198754; }
+      .toast-error { background: #dc3545; }
+      .toast-info { background: #0d6efd; }
+    </style>
 </head>
 
 <body>
@@ -53,6 +61,8 @@
                         <div class="card-header-actions d-flex gap-2">
                             <button type="button" class="btn btn-outline-secondary btn-sm" id="saveDraftBtn"><i
                                     class="bi bi-save"></i> Simpan</button>
+                            <button type="button" class="btn btn-primary btn-sm" id="saveQuotationBtn"><i class="bi bi-journal-plus"></i> Simpan Penawaran</button>
+                            <button type="button" class="btn btn-outline-dark btn-sm" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</button>
                             <button type="reset" class="btn btn-light btn-sm"><i
                                     class="bi bi-arrow-counterclockwise"></i> Reset</button>
                         </div>
@@ -184,6 +194,32 @@
                         </form>
                     </div>
                 </div>
+                <div class="card shadow-sm mt-3">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Riwayat Penawaran</h5>
+                        <input type="text" id="quotationSearch" class="form-control form-control-sm" placeholder="Cari pelanggan/perihal" style="max-width: 220px;">
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Perihal</th>
+                                        <th>Pelanggan</th>
+                                        <th>Tanggal</th>
+                                        <th class="text-end">Total</th>
+                                        <th class="text-center" style="width: 160px;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="quotationsTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted small py-3">Belum ada penawaran tersimpan.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Preview -->
@@ -298,6 +334,9 @@
         </div>
     </main>
 
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-c2w6l2mrp3Vv3yZzFhOe4Qf7xK5kWX7nQpYk0e5bJcH4P8v1mS9nYFjQkQf1C0iQ"
@@ -305,6 +344,22 @@
     <!-- jsPDF + html2canvas -->
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <!-- Supabase Client -->
+    <script type="module" src="supabase-init.js"></script>
+    <!-- Auth Guard: redirect to login if not authenticated -->
+    <script type="module">
+      import { supabaseClient } from './supabase-init.js';
+      (async () => {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (!session) {
+            window.location.href = 'login.html';
+          }
+        } catch (e) {
+          console.warn('Auth guard error', e);
+        }
+      })();
+    </script>
     <!-- App JS -->
     <script defer src="app.js"></script>
 </body>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Masuk | Quotation Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="modern.css" />
+  <style>
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(1200px 600px at 10% 10%, #eef3ff 0%, #f8f9fc 35%, #ffffff 100%); font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .login-card { width: 100%; max-width: 440px; border: none; box-shadow: 0 12px 28px rgba(25, 34, 58, 0.12); }
+    .brand { display:flex; align-items:center; gap:10px; }
+    .brand img { width: 36px; height: 36px; }
+    .brand .title { font-weight: 600; letter-spacing: 0.2px; }
+    .subtitle { color: #6c757d; font-size: 13px; }
+    .password-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #7a8798; }
+    .btn-primary { background: #2b6cb0; border-color: #2b6cb0; }
+    .btn-primary:hover { background: #265a99; border-color: #265a99; }
+    .footer { text-align:center; color:#8592a3; font-size:12px; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="card login-card">
+    <div class="card-body p-4">
+      <div class="brand mb-2">
+        <img src="images/logo.png" alt="Logo" />
+        <div>
+          <div class="title">Quotation Generator</div>
+          <div class="subtitle">Silakan login untuk melanjutkan</div>
+        </div>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control" id="username" placeholder="admin" required />
+          <div class="invalid-feedback">Username wajib diisi.</div>
+        </div>
+
+        <div class="mb-2 position-relative">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" placeholder="••••••••" required />
+          <span class="password-toggle" id="togglePwd" title="Tampilkan/Sembunyikan">👁️</span>
+          <div class="invalid-feedback">Password wajib diisi.</div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="1" id="rememberChk" checked />
+            <label class="form-check-label" for="rememberChk">Ingat saya</label>
+          </div>
+          <a href="#" class="small text-muted" id="helpLink">Butuh bantuan?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" id="loginBtn">Masuk</button>
+        <div id="loginError" class="text-danger small mt-2" style="display:none"></div>
+      </form>
+
+      <div class="footer">© Koperasi Serasi</div>
+    </div>
+  </div>
+
+  <script type="module" src="supabase-init.js"></script>
+  <script type="module" src="login.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
