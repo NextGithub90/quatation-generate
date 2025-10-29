@@ -103,13 +103,17 @@ body {
 }
 .meta-block .label {
   color: #667085;
-  width: 160px;
+  width: 180px; /* beri ruang label tetap */
   display: inline-block;
+  white-space: nowrap;
 }
 /* Tambahkan tanda ':' setelah label agar sesuai contoh */
 /* Pindahkan ':' ke depan value (bukan sesudah label) */
 .meta-block .label::after { content: ""; margin: 0; }
 .meta-block span + span::before { content: ":"; margin: 0 6px; }
+/* Setiap baris meta menjadi grid agar wrap value sejajar dengan awal value */
+.meta-block > div { display: grid; grid-template-columns: 180px 1fr; align-items: start; }
+.meta-block > div span:last-child { word-break: break-word; }
 
 /* Force two-column layout for meta section */
 .invoice-meta .row {
@@ -192,6 +196,10 @@ body {
   border-radius: 0.5rem;
   background: #fff;
 }
+/* Rapatkan spasi catatan */
+.notes-content { line-height: 1.45; }
+.notes-content ol, .notes-content ul { margin: 0.25rem 0; padding-left: 1.1rem; }
+.notes-content li { margin-bottom: 0.25rem; }
 
 /* Footer area sticks to bottom when content short */
 .invoice-footer {

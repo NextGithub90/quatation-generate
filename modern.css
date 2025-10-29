@@ -77,6 +77,8 @@ body { background: radial-gradient(1200px 600px at 20% -10%, rgba(37,99,235,.15)
 .invoice-header { position: relative; background: linear-gradient(135deg, #0b3a7a, #1b4ea2); padding: 1.2rem 1.25rem; }
 .invoice-header .title { font-size: 1.35rem; letter-spacing: .3px; padding-right: 88px; }
 .company-logo { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); height: 60px; width: auto; }
+/* Tambahkan border putih agar logo lebih terbaca di header biru */
+.company-logo { border: 2px solid #fff; border-radius: 10px; padding: 4px; background: #fff; }
 
 .invoice-meta { padding: 1rem 1.25rem; }
 .meta-block { color: #0f172a; }
