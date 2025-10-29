@@ -140,6 +140,24 @@ body {
   background: #fafafa;
 }
 
+/* Alignments per column */
+.invoice-table th:nth-child(3),
+.invoice-table td:nth-child(3),
+.invoice-table th:nth-child(4),
+.invoice-table td:nth-child(4) {
+  text-align: center; /* Qty & Satuan di tengah */
+}
+.invoice-table th:nth-child(5),
+.invoice-table td:nth-child(5),
+.invoice-table th:nth-child(6),
+.invoice-table td:nth-child(6) {
+  text-align: right; /* Harga Satuan & Total di kanan */
+  white-space: nowrap;
+}
+.invoice-table td:nth-child(2) div {
+  white-space: normal; /* Deskripsi bebas meluas dan wrap */
+}
+
 /* Summary */
 .summary {
   border: none;
