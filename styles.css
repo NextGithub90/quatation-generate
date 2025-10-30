@@ -13,6 +13,8 @@
   --space-4: 1rem; /*16px*/
   --space-5: 1.5rem; /*24px*/
   --a4-h: 1123px; /* approx 297mm at 96dpi */
+  /* Indent untuk baris wrap setelah baris pertama pada nilai meta */
+  --meta-wrap-indent: 12px;
 }
 
 html,
@@ -109,11 +111,27 @@ body {
 }
 /* Tambahkan tanda ':' setelah label agar sesuai contoh */
 /* Pindahkan ':' ke depan value (bukan sesudah label) */
-.meta-block .label::after { content: ""; margin: 0; }
-.meta-block span + span::before { content: ":"; margin: 0 6px; }
+.meta-block .label::after {
+  content: "";
+  margin: 0;
+}
+.meta-block span + span::before {
+  content: ":";
+  margin: 0 6px;
+}
 /* Setiap baris meta menjadi grid agar wrap value sejajar dengan awal value */
-.meta-block > div { display: grid; grid-template-columns: 180px 1fr; align-items: start; }
-.meta-block > div span:last-child { word-break: break-word; }
+.meta-block > div {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  align-items: start;
+}
+.meta-block > div span:last-child {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  /* Hanging indent: baris pertama tetap, baris selanjutnya bergeser ke kanan */
+  padding-left: var(--meta-wrap-indent);
+  text-indent: calc(var(--meta-wrap-indent) * -1);
+}
 
 /* Force two-column layout for meta section */
 .invoice-meta .row {
@@ -130,6 +148,7 @@ body {
   border: 1px solid var(--border);
   margin: 0 var(--space-4);
   width: calc(100% - 2rem);
+  table-layout: fixed; /* pastikan lebar kolom konsisten saat render & capture */
 }
 .invoice-table thead th {
   background: #eef2ff;
@@ -160,6 +179,8 @@ body {
 }
 .invoice-table td:nth-child(2) div {
   white-space: normal; /* Deskripsi bebas meluas dan wrap */
+  word-break: break-word;
+  overflow-wrap: anywhere; /* jaga wrap sama antara preview & pdf */
 }
 
 /* Summary */
@@ -197,9 +218,17 @@ body {
   background: #fff;
 }
 /* Rapatkan spasi catatan */
-.notes-content { line-height: 1.45; }
-.notes-content ol, .notes-content ul { margin: 0.25rem 0; padding-left: 1.1rem; }
-.notes-content li { margin-bottom: 0.25rem; }
+.notes-content {
+  line-height: 1.45;
+}
+.notes-content ol,
+.notes-content ul {
+  margin: 0.25rem 0;
+  padding-left: 1.1rem;
+}
+.notes-content li {
+  margin-bottom: 0.25rem;
+}
 
 /* Footer area sticks to bottom when content short */
 .invoice-footer {
@@ -247,10 +276,16 @@ body {
   color: #dc3545;
   font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(16,24,40,.12);
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.12);
 }
-.attachment-remove:hover { background: #fff; }
-@media print { .attachment-remove { display: none !important; } }
+.attachment-remove:hover {
+  background: #fff;
+}
+@media print {
+  .attachment-remove {
+    display: none !important;
+  }
+}
 
 @media (max-width: 992px) {
   .attachments-grid {

@@ -335,6 +335,16 @@ function addItemRow(data) {
     </div>`;
   itemsListEl.appendChild(wrapper);
 
+  // Prefill nilai dari data tersimpan ke input DOM
+  const nameInputEl = wrapper.querySelector('[data-field="name"]');
+  if (nameInputEl) nameInputEl.value = data?.name ?? "";
+  const unitSelectEl = wrapper.querySelector('[data-field="unit"]');
+  if (unitSelectEl) unitSelectEl.value = data?.unit ?? "Pcs";
+  const qtyInputEl = wrapper.querySelector('[data-field="qty"]');
+  if (qtyInputEl) qtyInputEl.value = String(data?.qty ?? 1);
+  const baseInputEl = wrapper.querySelector('[data-field="base"]');
+  if (baseInputEl) baseInputEl.value = data?.base ?? "";
+
   const removeBtn = wrapper.querySelector(".btn-outline-danger");
   removeBtn.addEventListener("click", () => {
     wrapper.remove();
